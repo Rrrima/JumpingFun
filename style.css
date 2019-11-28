@@ -1,6 +1,8 @@
 body{
   padding: 0;
   margin: 0;
+  font-family: 'Tomorrow', 'Roboto', sans-serif;
+	font-size: 16px/22px;
 }
 
 #score{
@@ -35,4 +37,13 @@ body{
 .page button{
   width: 20vw;
   height: 100px;
+  font-size: 1.2em;
+	font-family: 'Tomorrow', 'Roboto', sans-serif;
+	color: white;
+	background-color: #14de43;
+	border: none;
+	border-radius:50px; 
+}
+.page button:focus{
+	background-color: #15ad38;
 }
