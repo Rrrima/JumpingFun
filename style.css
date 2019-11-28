@@ -2,7 +2,7 @@ body{
   padding: 0;
   margin: 0;
   font-family: 'Tomorrow', 'Roboto', sans-serif;
-	font-size: 16px/22px;
+  font-size: 16px/22px;
 }
 
 #score{
@@ -17,7 +17,12 @@ body{
   line-height: 20px;
   color: #fff;
 }
-
+#panel{
+	/*display: block;*/
+	display: none;
+	width: 10%;
+	margin: 3em auto auto 1em;
+}
 .page{
   position: absolute;
   z-index: 99999;
