@@ -20,8 +20,10 @@ body{
 #panel{
 	/*display: block;*/
 	display: none;
+	position:fixed;
 	width: 10%;
-	margin: 3em auto auto 1em;
+	top: 2em;
+	left: 2em;
 }
 .page{
   position: absolute;
