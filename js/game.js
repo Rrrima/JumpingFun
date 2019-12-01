@@ -1,13 +1,11 @@
-function createScene(){
+import * as THREE from '../three/three.module.js';
+import Stats from '../three/stats.module.js';
+import { GLTFLoader } from '../three/GLTFLoader.js';
+
+export default function Game () {
   // create scene
   const scene = this.scene = new THREE.Scene();
   scene.background = new THREE.Color(0xE5E7E9);
-  return scene
-}
-
-function Game () {
-  // create scene
-  const scene = this.scene = createScene();
   // create light 
   const light = this.light = new THREE.DirectionalLight(0xeeee22, .5);
   const lightTarget = this.lightTarget = new THREE.Object3D();
