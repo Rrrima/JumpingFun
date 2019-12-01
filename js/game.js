@@ -32,15 +32,19 @@ function Game () {
   scene.add(light);
    //地面
   const planeGeometry = new THREE.PlaneBufferGeometry(10e2, 10e2, 1, 1);
-  const planeMeterial = new THREE.MeshLambertMaterial({ color: 0xf5f0e1 });
+  var texture = new THREE.TextureLoader().load("imgs/jump_grass.jpg");
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(4, 4);
+  const planeMeterial = new THREE.MeshLambertMaterial({ map: texture });
   const plane = new THREE.Mesh(planeGeometry, planeMeterial);
-  var texture = new THREE.TextureLoader().load("imgs/f2.jpg");
+  
   plane.rotation.x = -.5 * Math.PI;
   // plane.position.y = -.1;
   // 接收阴影
   plane.receiveShadow = true;
   scene.add(plane);
-  scene.add(new THREE.AxesHelper(10e3));
+  // scene.add(new THREE.AxesHelper(10e3));
   // create camera
   this.camera = new THREE.OrthographicCamera(window.innerWidth / -8,
     window.innerWidth / 8,
@@ -123,9 +127,23 @@ Object.assign(Game.prototype, {
     var geometry = cubeType === 'cube' ?
     new THREE.CubeGeometry(this.config.cubeX, this.config.cubeY, this.config.cubeZ):
     new THREE.CylinderGeometry(this.config.cylinderRadius, this.config.cylinderRadius, this.config.cylinderHeight, 100);
-    var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
-    var material = new THREE.MeshLambertMaterial( { color: color } );
-    var mesh = new THREE.Mesh(geometry, material);
+    // var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
+    var materials = round=cubeType === 'cube' ?[ 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // right
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // left
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top.jpg") } ), // top
+     new THREE.MeshLambertMaterial( { color:'black'} ), // bottom 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // front 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // back
+    ]:[
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_round.jpg") } ), // side
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top_round.jpg") } ), // top
+     new THREE.MeshLambertMaterial( { color:'black'}), // bottom
+    ]; 
+    var cubeSidesMaterial = new THREE.MultiMaterial( materials );
+    // var material = new THREE.MeshLambertMaterial( { map: texture } );
+    // var mesh = new THREE.Mesh(geometry, material);
+    var mesh = new THREE.Mesh(geometry, cubeSidesMaterial);
     mesh.castShadow=true;
     mesh.receiveShadow=true;
 
@@ -228,8 +246,14 @@ Object.assign(Game.prototype, {
     };
     var dif=new THREE.Vector3(n.x-c.x,0,n.z-c.z);
     if (c.x < n.x || c.z > n.z) {
-      if ( c.x < n.x ) {self.cameraPos.current.x += 1;self.camera.position.x+=1;}
-      if (c.z > n.z) {self.cameraPos.current.z -= 1;self.camera.position.z-=1;}
+      if ( c.x < n.x ) {
+        self.cameraPos.current.x += 1;
+        self.camera.position.x+=1;
+      }
+      if (c.z > n.z) {
+        self.cameraPos.current.z -= 1;
+        self.camera.position.z-=1;
+      }
       if ( Math.abs(self.cameraPos.current.x - self.cameraPos.next.x) < 0.5) {
         self.cameraPos.current.x = self.cameraPos.next.x;
       }
