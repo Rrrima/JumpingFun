@@ -1,5 +1,7 @@
 import * as THREE from '../three/three.module.js';
-import TWEEN from './tween.cjs.js'
+import TWEEN from './tween.cjs.js';
+import {animate} from './util.js';
+import Particle from './particle.js'
 
 export default class Jumper {
 	constructor ({
@@ -26,6 +28,11 @@ export default class Jumper {
 	    this.stage = world.scene;
 
 	    this.createBody();
+	    this.particle = new Particle({
+	      triggerObject: this.body,
+	      world
+	    })
+	    console.log(this.particle)
 	};
 
 	createBody () {
@@ -108,9 +115,8 @@ export default class Jumper {
   	};
 
 	flip (duration, direction) {
-	    const { bodyRotateSegment } = this
-	    let increment = 0
-
+	    const { bodyRotateSegment } = this;
+	    let increment = 0;
 	    animate(
 	      {
 	        from: { deg: 0 },
@@ -122,7 +128,7 @@ export default class Jumper {
 	        if (direction) {
 	          bodyRotateSegment.rotateZ(-(deg - increment) * (Math.PI/180))
 	        } else {
-	          bodyRotateSegment.rotateX((deg - increment) * (Math.PI/180))
+	          bodyRotateSegment.rotateX(-(deg - increment) * (Math.PI/180))
 	        }
 	        increment = deg
 	      }

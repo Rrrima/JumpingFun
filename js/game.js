@@ -172,9 +172,9 @@ Object.assign(Game.prototype, {
   createJumper: function (){
     var color = this.config.jumpColor;
     var world = this;
-    var littleman = new Jumper({color,world});
-    var mesh = littleman.body;
-    littleman.enterStage(0, this.config.jumpHeight / 2, 0);
+    this.littleman = new Jumper({color,world});
+    var mesh = this.littleman.body;
+    this.littleman.enterStage(0, this.config.jumpHeight / 2, 0);
     // geometry.translate(0, this.config.jumpHeight / 2, 0);
     // mesh.position.set(0, this.config.jumpHeight / 2, 0);
     this.jumper = mesh;
@@ -250,9 +250,13 @@ Object.assign(Game.prototype, {
   },
 
   _onMouseDown: function (){
+    var curbox = this.cubes[this.cubes.length - 2];
     this.mouseState = -1;
-    if (this.jumper.scale.y > 0.02){ // 控制一个域值，防止缩放时底面也进行缩放
+    this.littleman.particle.runParticleFlow();
+    this.littleman.particle.runParticleFountain();
+    if (this.jumper.scale.y > 0.6){ // 控制一个域值，防止缩放时底面也进行缩放
       this.jumper.scale.y -= 0.01;
+      curbox.scale.y -= 0.002;
       this.xspeed += 0.004; // 水平方向运动加速度
       this.yspeed += 0.008; // 垂直方向运动加速度
       this._render();
@@ -263,8 +267,11 @@ Object.assign(Game.prototype, {
   },
 
   _onMouseUp: function (){
+    var curbox = this.cubes[this.cubes.length - 2];
     var self  = this;
+    this.littleman.particle.stopRunParticleFlow();
     this.mouseState  = 1;
+    this.flip = 1;
     if (this.jumper.position.y >= this.config.jumpHeight / 2){
       // jumper还在空中运动
       var dir = this.getDirection();
@@ -278,9 +285,19 @@ Object.assign(Game.prototype, {
       this._render();
       // 垂直方向先上升后下降
       this.yspeed -= 0.01;
+      // console.log(this.yspeed)
       // jumper要恢复
+      if (this.yspeed>0.21 && this.yspeed<0.22 && this.flip){
+        // flip
+        console.log("eligible to flip");
+        this.littleman.flip(430,dir==='x');
+        this.flip = 0;
+      }
       if (this.jumper.scale.y < 1){
         this.jumper.scale.y += 0.02;
+      }
+      if (curbox.scale.y < 1){
+        curbox.scale.y += 0.03;
       }
       requestAnimationFrame(function (){
         this._onMouseUp();
