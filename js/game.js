@@ -1,6 +1,7 @@
 import * as THREE from '../three/three.module.js';
 import Stats from '../three/stats.module.js';
 import { GLTFLoader } from '../three/GLTFLoader.js';
+import Jumper from './Jumper.js';
 
 export default function Game () {
   // create scene
@@ -169,10 +170,11 @@ Object.assign(Game.prototype, {
 
   // 创建一个弹跳体
   createJumper: function (){
-    var geometry = new THREE.CylinderGeometry(this.config.jumpTopRadius, this.config.jumpBottomRadius, this.config.jumpHeight, 100);
-    var material = new THREE.MeshLambertMaterial( { color: this.config.jumpColor } );
-    var mesh = new THREE.Mesh(geometry, material);
-    geometry.translate(0, this.config.jumpHeight / 2, 0);
+    var color = this.config.jumpColor;
+    console.log(color);
+    var mesh = new Jumper({color}).body;
+    console.log(mesh);
+    // geometry.translate(0, this.config.jumpHeight / 2, 0);
     mesh.position.set(0, this.config.jumpHeight / 2, 0);
     this.jumper = mesh;
     this.scene.add( mesh );
