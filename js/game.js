@@ -383,6 +383,7 @@ Object.assign(Game.prototype, {
 
   start: function() {
     this.camera.position.set(100,100,100);
+    this.plane.position.set(0,0,0);
     this.createCube();
     this.createCube();
     this.createJumper();
@@ -396,6 +397,7 @@ Object.assign(Game.prototype, {
     }
     this.scene.remove(this.jumper);
     this.camera.position.set(100,100,100);
+    this.plane.position.set(0,0,0);
     this.cameraPos = {
       current: new THREE.Vector3(0, 0, 0), // 摄像机当前的坐标
       next: new THREE.Vector3() // 摄像机即将要移到的位置
