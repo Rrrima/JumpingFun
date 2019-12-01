@@ -11,16 +11,16 @@ export default function Game () {
   const light = this.light = new THREE.DirectionalLight(0xeeee22, .5);
   const lightTarget = this.lightTarget = new THREE.Object3D();
   light.target = lightTarget;
-  light.position.set(-300,600,800);
+  light.position.set(-3,6,8);
   // 开启阴影投射
   light.castShadow = true;
   // 定义可见域的投射阴影
-  light.shadow.camera.left = -10;
-  light.shadow.camera.right = 10;
-  light.shadow.camera.top = 10;
-  light.shadow.camera.bottom = -10;
+  light.shadow.camera.left = -1000;
+  light.shadow.camera.right = 1000;
+  light.shadow.camera.top = 1000;
+  light.shadow.camera.bottom = -1000;
   light.shadow.camera.near = 0;
-  light.shadow.camera.far = 20;
+  light.shadow.camera.far = 2000;
   // 定义阴影的分辨率
   light.shadow.mapSize.width = 1600;
   light.shadow.mapSize.height = 1600;
@@ -29,12 +29,27 @@ export default function Game () {
   scene.add(new THREE.HemisphereLight(0xffffff, 0xffffff, .2));
   scene.add(lightTarget);
   scene.add(light);
+   //地面
+  const planeGeometry = new THREE.PlaneBufferGeometry(10e2, 10e2, 1, 1);
+  var texture = new THREE.TextureLoader().load("imgs/jump_grass.jpg");
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(4, 4);
+  const planeMeterial = new THREE.MeshLambertMaterial({ map: texture });
+  const plane = new THREE.Mesh(planeGeometry, planeMeterial);
+  
+  plane.rotation.x = -.5 * Math.PI;
+  // plane.position.y = -.1;
+  // 接收阴影
+  plane.receiveShadow = true;
+  scene.add(plane);
+  // scene.add(new THREE.AxesHelper(10e3));
   // create camera
-  this.camera = new THREE.OrthographicCamera(window.innerWidth / -80,
-    window.innerWidth / 80,
-    window.innerHeight / 80,
-    window.innerHeight / -80,
-    0.1, 5000);
+  this.camera = new THREE.OrthographicCamera(window.innerWidth / -8,
+    window.innerWidth / 8,
+    window.innerHeight / 8,
+    window.innerHeight / -8,
+    0.1, 1000);
   this.camera.position.set(100, 100, 100);
   this.cameraPos = {
     current: new THREE.Vector3(0, 0, 0), 
@@ -43,6 +58,8 @@ export default function Game () {
 
   this.renderer = new THREE.WebGLRenderer({ antialias: true });
   this.renderer.setSize(window.innerWidth, window.innerHeight);
+  this.renderer.shadowMap.enabled=true;
+  this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   document.body.appendChild( this.renderer.domElement );
   this.canvas = this.renderer.domElement;
 
@@ -55,24 +72,24 @@ export default function Game () {
 
   this.config = {
       // 弹跳体参数设置
-      jumpTopRadius: 0.3,
-      jumpBottomRadius: 0.5,
-      jumpHeight: 2,
+      jumpTopRadius: 3,
+      jumpBottomRadius: 5,
+      jumpHeight: 20,
       jumpColor: 0x386899,
       // 立方体参数设置
-      cubeX: 4,
-      cubeY: 2,
-      cubeZ: 4,
+      cubeX: 40,
+      cubeY: 20,
+      cubeZ: 40,
       cubeColor: 0xdfdf4a,
       // 圆柱体参数设置
-      cylinderRadius: 2,
-      cylinderHeight: 2,
+      cylinderRadius: 20,
+      cylinderHeight: 20,
       cylinderColor: 0xdfdf4a,
       // 设置缓存数组最大缓存多少个图形
       cubeMaxLen: 6,
       // 立方体内边缘之间的最小距离和最大距离
-      cubeMinDis: 2.5,
-      cubeMaxDis: 4
+      cubeMinDis: 25,
+      cubeMaxDis: 40
    };
 
    this.mouse = {
@@ -109,9 +126,25 @@ Object.assign(Game.prototype, {
     var geometry = cubeType === 'cube' ?
     new THREE.CubeGeometry(this.config.cubeX, this.config.cubeY, this.config.cubeZ):
     new THREE.CylinderGeometry(this.config.cylinderRadius, this.config.cylinderRadius, this.config.cylinderHeight, 100);
-    var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
-    var material = new THREE.MeshLambertMaterial( { color: color } );
-    var mesh = new THREE.Mesh(geometry, material);
+    // var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
+    var materials = round=cubeType === 'cube' ?[ 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // right
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // left
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top.jpg") } ), // top
+     new THREE.MeshLambertMaterial( { color:'black'} ), // bottom 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // front 
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // back
+    ]:[
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_round.jpg") } ), // side
+     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top_round.jpg") } ), // top
+     new THREE.MeshLambertMaterial( { color:'black'}), // bottom
+    ]; 
+    var cubeSidesMaterial = new THREE.MultiMaterial( materials );
+    // var material = new THREE.MeshLambertMaterial( { map: texture } );
+    // var mesh = new THREE.Mesh(geometry, material);
+    var mesh = new THREE.Mesh(geometry, cubeSidesMaterial);
+    mesh.castShadow=true;
+    mesh.receiveShadow=true;
 
     // 产生随机图形
     if (this.cubes.length){
@@ -151,7 +184,7 @@ Object.assign(Game.prototype, {
     } else {
       mesh.position.set(0, 0, 0);
     }
-
+    
     this.testPosition(mesh.position);
     this.cubes.push(mesh);
     this.scene.add(mesh);
@@ -175,11 +208,7 @@ Object.assign(Game.prototype, {
     this.littleman = new Jumper({color,world});
     var mesh = this.littleman.body;
     this.littleman.enterStage(0, this.config.jumpHeight / 2, 0);
-    // geometry.translate(0, this.config.jumpHeight / 2, 0);
-    // mesh.position.set(0, this.config.jumpHeight / 2, 0);
     this.jumper = mesh;
-    // this.scene.add( mesh );
-    // this._render();
   },
 
   _render: function (){
@@ -210,13 +239,20 @@ Object.assign(Game.prototype, {
       y: self.cameraPos.next.y,
       z: self.cameraPos.next.z
     };
+    var dif=new THREE.Vector3(n.x-c.x,0,n.z-c.z);
     if (c.x < n.x || c.z > n.z) {
-      if ( c.x < n.x ) self.cameraPos.current.x += 0.1;
-      if (c.z > n.z) self.cameraPos.current.z -= 0.1;
-      if ( Math.abs(self.cameraPos.current.x - self.cameraPos.next.x) < 0.05) {
+      if ( c.x < n.x ) {
+        self.cameraPos.current.x += 1;
+        self.camera.position.x+=1;
+      }
+      if (c.z > n.z) {
+        self.cameraPos.current.z -= 1;
+        self.camera.position.z-=1;
+      }
+      if ( Math.abs(self.cameraPos.current.x - self.cameraPos.next.x) < 0.5) {
         self.cameraPos.current.x = self.cameraPos.next.x;
       }
-      if ( Math.abs(self.cameraPos.current.z - self.cameraPos.next.z) < 0.05) {
+      if ( Math.abs(self.cameraPos.current.z - self.cameraPos.next.z) < 0.5) {
         self.cameraPos.current.z = self.cameraPos.next.z;
       }
       self.camera.lookAt(new THREE.Vector3(c.x, 0, c.z));
@@ -241,10 +277,10 @@ Object.assign(Game.prototype, {
   },
 
   _onwindowResize: function (){
-    this.camera.left = window.innerWidth / -80;
-    this.camera.right = window.innerWidth / 80;
-    this.camera.top = window.innerHeight / 80;
-    this.camera.bottom = window.innerHeight / -80;
+    this.camera.left = window.innerWidth / -2;
+    this.camera.right = window.innerWidth / 2;
+    this.camera.top = window.innerHeight / 2;
+    this.camera.bottom = window.innerHeight / -2;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   },
@@ -294,7 +330,7 @@ Object.assign(Game.prototype, {
         this.flip = 0;
       }
       if (this.jumper.scale.y < 1){
-        this.jumper.scale.y += 0.02;
+        this.jumper.scale.y += 0.2;
       }
       if (curbox.scale.y < 1){
         curbox.scale.y += 0.03;
@@ -306,7 +342,7 @@ Object.assign(Game.prototype, {
       // jumper降落了
       var type = this.getJumpState();
       console.log('jumpstate:' + type);
-
+      console.log('mousestate:' + this.mouseState);
       if (type === 1){
         // 落在当前块上
         this.xspeed = 0;
@@ -325,8 +361,8 @@ Object.assign(Game.prototype, {
       } else if (type === -2){
         // 落到大地上动画
         (function continuefalling () {
-          if (self.jumper.position.y >= -self.config.jumpHeight / 2){
-            self.jumper.position.y -= 0.06;
+          if (self.jumper.position.y >= 0){
+            self.jumper.position.y -= 0.8;
             self._render();
             requestAnimationFrame(continuefalling);
           }
@@ -349,17 +385,16 @@ Object.assign(Game.prototype, {
   },
 
   _initScore: function (){
-    var el = document.createElement('div');
-    el.id = "score";
-    el.innerHTML = '0';
-    document.body.appendChild(el);
+    document.getElementById("panel").style.display="block";
   },
 
   _updateScore: function (){
-    document.getElementById('score').innerHTML = this.score;
+    document.getElementById('current_score').innerHTML = this.score;
   },
 
   start: function() {
+    this.camera.position.set(100,100,100);
+    this.plane.position.set(0,0,0);
     this.createCube();
     this.createCube();
     this.createJumper();
@@ -372,7 +407,8 @@ Object.assign(Game.prototype, {
       this.scene.remove(this.cubes[i]);
     }
     this.scene.remove(this.jumper);
-
+    this.camera.position.set(100,100,100);
+    this.plane.position.set(0,0,0);
     this.cameraPos = {
       current: new THREE.Vector3(0, 0, 0), // 摄像机当前的坐标
       next: new THREE.Vector3() // 摄像机即将要移到的位置
@@ -414,9 +450,10 @@ Object.assign(Game.prototype, {
      } else {
        var self  = this;
        (function continuefalling () {
-         if (self.jumper.position.y >= -self.config.jumpHeight / 2){
-           self.jumper.position.y -= 0.06;
+         if (self.jumper.position.y >= 0){
+           self.jumper.position.y -= 0.8;
            self._render();
+           console.log("falling!");
            requestAnimationFrame(continuefalling);
          }
        })();
