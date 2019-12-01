@@ -1,13 +1,12 @@
-function createScene(){
+import * as THREE from '../three/three.module.js';
+import Stats from '../three/stats.module.js';
+import { GLTFLoader } from '../three/GLTFLoader.js';
+import Jumper from './Jumper.js';
+
+export default function Game () {
   // create scene
   const scene = this.scene = new THREE.Scene();
   scene.background = new THREE.Color(0xE5E7E9);
-  return scene
-}
-
-function Game () {
-  // create scene
-  const scene = this.scene = createScene();
   // create light 
   const light = this.light = new THREE.DirectionalLight(0xeeee22, .5);
   const lightTarget = this.lightTarget = new THREE.Object3D();
@@ -204,16 +203,12 @@ Object.assign(Game.prototype, {
 
   // 创建一个弹跳体
   createJumper: function (){
-    var geometry = new THREE.CylinderGeometry(this.config.jumpTopRadius, this.config.jumpBottomRadius, this.config.jumpHeight, 100);
-    var material = new THREE.MeshLambertMaterial( { color: this.config.jumpColor } );
-    var mesh = new THREE.Mesh(geometry, material);
-    geometry.translate(0, this.config.jumpHeight / 2, 0);
-    mesh.position.set(0, this.config.jumpHeight / 2, 0);
-    mesh.castShadow=true;
-    mesh.receiveShadow=true;
+    var color = this.config.jumpColor;
+    var world = this;
+    this.littleman = new Jumper({color,world});
+    var mesh = this.littleman.body;
+    this.littleman.enterStage(0, this.config.jumpHeight / 2, 0);
     this.jumper = mesh;
-    this.scene.add( mesh );
-    this._render();
   },
 
   _render: function (){
@@ -287,16 +282,19 @@ Object.assign(Game.prototype, {
     this.camera.top = window.innerHeight / 2;
     this.camera.bottom = window.innerHeight / -2;
     this.camera.updateProjectionMatrix();
-
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   },
 
   _onMouseDown: function (){
+    var curbox = this.cubes[this.cubes.length - 2];
     this.mouseState = -1;
-    if (this.jumper.scale.y > 0.02){ // 控制一个域值，防止缩放时底面也进行缩放
-      this.jumper.scale.y -=this.jumper.scale.y >= 0.7? 0.01:0;
-      this.xspeed +=this.xspeed>4? 0:0.08; // 水平方向运动加速度
-      this.yspeed +=this.xspeed>5? 0:0.08; // 垂直方向运动加速度
+    this.littleman.particle.runParticleFlow();
+    this.littleman.particle.runParticleFountain();
+    if (this.jumper.scale.y > 0.6){ // 控制一个域值，防止缩放时底面也进行缩放
+      this.jumper.scale.y -= 0.01;
+      curbox.scale.y -= 0.002;
+      this.xspeed += 0.004; // 水平方向运动加速度
+      this.yspeed += 0.008; // 垂直方向运动加速度
       this._render();
       requestAnimationFrame(function (){
         if (this.mouseState === -1) this._onMouseDown();
@@ -305,8 +303,11 @@ Object.assign(Game.prototype, {
   },
 
   _onMouseUp: function (){
+    var curbox = this.cubes[this.cubes.length - 2];
     var self  = this;
+    this.littleman.particle.stopRunParticleFlow();
     this.mouseState  = 1;
+    this.flip = 1;
     if (this.jumper.position.y >= this.config.jumpHeight / 2){
       // jumper还在空中运动
       var dir = this.getDirection();
@@ -319,10 +320,20 @@ Object.assign(Game.prototype, {
       }
       this._render();
       // 垂直方向先上升后下降
-      this.yspeed -= 0.1;
+      this.yspeed -= 0.01;
+      // console.log(this.yspeed)
       // jumper要恢复
+      if (this.yspeed>0.21 && this.yspeed<0.22 && this.flip){
+        // flip
+        console.log("eligible to flip");
+        this.littleman.flip(430,dir==='x');
+        this.flip = 0;
+      }
       if (this.jumper.scale.y < 1){
         this.jumper.scale.y += 0.2;
+      }
+      if (curbox.scale.y < 1){
+        curbox.scale.y += 0.03;
       }
       requestAnimationFrame(function (){
         this._onMouseUp();
@@ -413,10 +424,6 @@ Object.assign(Game.prototype, {
     this.createCube();
     this.createJumper();
     this._updateScore();
-  },
-
-  stop: function() {
-
   },
 
   getRandomValue: function (min, max){
