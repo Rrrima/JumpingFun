@@ -171,14 +171,15 @@ Object.assign(Game.prototype, {
   // 创建一个弹跳体
   createJumper: function (){
     var color = this.config.jumpColor;
-    console.log(color);
-    var mesh = new Jumper({color}).body;
-    console.log(mesh);
+    var world = this;
+    var littleman = new Jumper({color,world});
+    var mesh = littleman.body;
+    littleman.enterStage(0, this.config.jumpHeight / 2, 0);
     // geometry.translate(0, this.config.jumpHeight / 2, 0);
-    mesh.position.set(0, this.config.jumpHeight / 2, 0);
+    // mesh.position.set(0, this.config.jumpHeight / 2, 0);
     this.jumper = mesh;
-    this.scene.add( mesh );
-    this._render();
+    // this.scene.add( mesh );
+    // this._render();
   },
 
   _render: function (){
@@ -245,7 +246,6 @@ Object.assign(Game.prototype, {
     this.camera.top = window.innerHeight / 80;
     this.camera.bottom = window.innerHeight / -80;
     this.camera.updateProjectionMatrix();
-
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   },
 
@@ -371,10 +371,6 @@ Object.assign(Game.prototype, {
     this.createCube();
     this.createJumper();
     this._updateScore();
-  },
-
-  stop: function() {
-
   },
 
   getRandomValue: function (min, max){

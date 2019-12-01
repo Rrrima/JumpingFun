@@ -1,9 +1,12 @@
 import * as THREE from '../three/three.module.js';
+import TWEEN from './tween.cjs.js'
 
 export default class Jumper {
 	constructor ({
-		color
+		world,
+		color,
 	}) {
+		this.world = world;
 		this.width = 15;
 	    this.color = color;
 	    this.G = 9.8;
@@ -20,12 +23,12 @@ export default class Jumper {
 	    this.nextProp = null;
 	    this.powerStorageDuration = 1500;
 
-	    this.stage = null;
+	    this.stage = world.scene;
 
 	    this.createBody();
 	};
 
-	  createBody () {
+	createBody () {
 	    const { color, width } = this;
 	    console.log("inside construction",color,width);
 	    const material = new THREE.MeshLambertMaterial( { color: color } );
@@ -67,9 +70,65 @@ export default class Jumper {
 	    bodyRotateSegment.add(bodyScaleSegment);
 	    bodyRotateSegment.translateY(translateY);
 
-	    // 整体身高 = 头部位移 + 头部高度 / 2 = headSize * 5
 	    const body = this.body = new THREE.Group();
 	    body.add(bodyRotateSegment);
 	  };
+
+	bindEvent() {
+		const { world } = this;
+		const container = world.canvas;
+		const mouseup = () => {
+			if (this.jumping) {
+				return;
+			}
+			this.jumping = true;
+			this.poweringUp = false;
+			this.jump();
+			container.removeEventListener(world.mouse.down, mouseup);
+		}
+		const mousedown = event => {
+	      event.preventDefault()
+	      if (this.poweringUp || this.jumping || !this.currentProp) {
+	        return;
+	      }
+	      this.poweringUp = true;
+	      this.powerStorage();
+	      container.addEventListener(world.mouse.up, mouseup, false);
+	    }
+	    container.addEventListener(world.mouse.down, mousedown, false);
+	};
+
+	enterStage(x, y, z) {
+	    const { body,stage,world } = this;
+	    body.position.set(x, y, z);
+	    // this.nextProp = nextProp
+	    stage.add(body);
+	    world._render();
+	    this.bindEvent();
+  	};
+
+	flip (duration, direction) {
+	    const { bodyRotateSegment } = this
+	    let increment = 0
+
+	    animate(
+	      {
+	        from: { deg: 0 },
+	        to: { deg: 360 },
+	        duration,
+	        easing: TWEEN.Easing.Sinusoidal.InOut
+	      },
+	      ({ deg }) => {
+	        if (direction) {
+	          bodyRotateSegment.rotateZ(-(deg - increment) * (Math.PI/180))
+	        } else {
+	          bodyRotateSegment.rotateX((deg - increment) * (Math.PI/180))
+	        }
+	        increment = deg
+	      }
+	    )
+	  }
+
+
 };
 
