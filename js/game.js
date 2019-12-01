@@ -42,6 +42,7 @@ export default function Game () {
   // plane.position.y = -.1;
   // 接收阴影
   plane.receiveShadow = true;
+  this.plane=plane;
   scene.add(plane);
   // scene.add(new THREE.AxesHelper(10e3));
   // create camera
@@ -227,7 +228,7 @@ Object.assign(Game.prototype, {
     this._updateCamera();
   },
 
-  _updateCamera: function (){
+ _updateCamera: function (){
     var self = this;
     var c = {
       x: self.cameraPos.current.x,
@@ -244,10 +245,12 @@ Object.assign(Game.prototype, {
       if ( c.x < n.x ) {
         self.cameraPos.current.x += 1;
         self.camera.position.x+=1;
+        self.plane.position.x+=1;
       }
       if (c.z > n.z) {
         self.cameraPos.current.z -= 1;
         self.camera.position.z-=1;
+        self.plane.position.z-=1;
       }
       if ( Math.abs(self.cameraPos.current.x - self.cameraPos.next.x) < 0.5) {
         self.cameraPos.current.x = self.cameraPos.next.x;
