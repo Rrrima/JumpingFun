@@ -52,7 +52,7 @@ body{
   
 }
 .page button:focus{
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
+  background-color: #dd6231;
+  box-shadow: 0 5px #dba037;
   transform: translateY(4px);
 }
