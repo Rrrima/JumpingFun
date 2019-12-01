@@ -1,5 +1,5 @@
 # JumpingFun
 
-### To run load_test.html:
-##### python -m http.server
-##### http://localhost:8000/load_test.html
+### To run index.html:
+##### python3 -m http.server
+##### http://localhost:8000/index.html
