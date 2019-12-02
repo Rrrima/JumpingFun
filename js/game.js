@@ -37,6 +37,7 @@ export default function Game () {
   texture.repeat.set(4, 4);
   const planeMeterial = new THREE.MeshLambertMaterial({ map: texture });
   const plane = new THREE.Mesh(planeGeometry, planeMeterial);
+  this.plane = plane;
   
   plane.rotation.x = -.5 * Math.PI;
   // plane.position.y = -.1;
@@ -75,7 +76,7 @@ export default function Game () {
       jumpTopRadius: 3,
       jumpBottomRadius: 5,
       jumpHeight: 20,
-      jumpColor: 0x386899,
+      jumpColor: 0xF56C6C,
       // 立方体参数设置
       cubeX: 40,
       cubeY: 20,
@@ -127,7 +128,7 @@ Object.assign(Game.prototype, {
     new THREE.CubeGeometry(this.config.cubeX, this.config.cubeY, this.config.cubeZ):
     new THREE.CylinderGeometry(this.config.cylinderRadius, this.config.cylinderRadius, this.config.cylinderHeight, 100);
     // var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
-    var materials = round=cubeType === 'cube' ?[ 
+    var materials = cubeType === 'cube' ?[ 
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // right
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // left
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top.jpg") } ), // top
@@ -293,8 +294,8 @@ Object.assign(Game.prototype, {
     if (this.jumper.scale.y > 0.6){ // 控制一个域值，防止缩放时底面也进行缩放
       this.jumper.scale.y -= 0.01;
       curbox.scale.y -= 0.002;
-      this.xspeed += 0.004; // 水平方向运动加速度
-      this.yspeed += 0.008; // 垂直方向运动加速度
+      this.xspeed += 0.04; // 水平方向运动加速度
+      this.yspeed += 0.08; // 垂直方向运动加速度
       this._render();
       requestAnimationFrame(function (){
         if (this.mouseState === -1) this._onMouseDown();
@@ -320,10 +321,10 @@ Object.assign(Game.prototype, {
       }
       this._render();
       // 垂直方向先上升后下降
-      this.yspeed -= 0.01;
-      // console.log(this.yspeed)
+      this.yspeed -= 0.1;
+      console.log(this.yspeed)
       // jumper要恢复
-      if (this.yspeed>0.21 && this.yspeed<0.22 && this.flip){
+      if (this.yspeed>2.5 && this.yspeed<2.6 && this.flip){
         // flip
         console.log("eligible to flip");
         this.littleman.flip(430,dir==='x');

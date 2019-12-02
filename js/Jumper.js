@@ -9,7 +9,7 @@ export default class Jumper {
 		color,
 	}) {
 		this.world = world;
-		this.width = 15;
+		this.width = 120;
 	    this.color = color;
 	    this.G = 9.8;
 	    this.v0 = 80;
@@ -32,12 +32,12 @@ export default class Jumper {
 	      triggerObject: this.body,
 	      world
 	    })
-	    console.log(this.particle)
+	    console.log(this.particle);
 	};
 
 	createBody () {
 	    const { color, width } = this;
-	    console.log("inside construction",color,width);
+	    // console.log("inside construction",color,width);
 	    const material = new THREE.MeshLambertMaterial( { color: color } );
 	    material.setValues({color});
 

@@ -4,7 +4,7 @@ import { getPropSize, rangeNumberInclusive, destroyMesh } from './util.js'
 export default class Particle {
   constructor ({
     world,
-    quantity = 15, // 数量
+    quantity = 20, // 数量
     triggerObject // 触发对象
   }) {
     this.world = world;
@@ -17,7 +17,7 @@ export default class Particle {
     this.triggerObjectWidth = x;
 
     // 粒子流，垂直方向的范围，约定从小人的上半身出现，算上粒子最大大小
-    const flowSizeRange = this.flowSizeRange = [x / 6, x / 3];
+    const flowSizeRange = this.flowSizeRange = [x, x /2];
     this.flowRangeY = [y / 2, y - flowSizeRange[1]];
     // 粒子初始的y值应该是粒子大小的最大值
     this.initalY = flowSizeRange[1];
@@ -52,7 +52,7 @@ export default class Particle {
     const { quantity, triggerObject } = this;
     // 一半白色、一半绿色
     const white = new THREE.Color( 0xffffff );
-    const green = new THREE.Color( 0x58D68D );
+    const green = new THREE.Color( 0xF56C6C );
     const colors = Array.from({ length: quantity }).map((_, i) => i % 2 ? white : green);
     const particleSystem = this.particleSystem = new THREE.Group();
     console.log("particles:",particleSystem)
