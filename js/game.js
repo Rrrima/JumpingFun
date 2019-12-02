@@ -31,11 +31,7 @@ export default function Game () {
   scene.add(light);
    //地面
   const planeGeometry = new THREE.PlaneBufferGeometry(10e2, 10e2, 1, 1);
-  var texture = new THREE.TextureLoader().load("imgs/jump_grass.jpg");
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(4, 4);
-  const planeMeterial = new THREE.MeshLambertMaterial({ map: texture });
+  const planeMeterial = new THREE.MeshLambertMaterial({ color: 0x306b34 });
   const plane = new THREE.Mesh(planeGeometry, planeMeterial);
   this.plane = plane;
   
@@ -245,10 +241,12 @@ Object.assign(Game.prototype, {
       if ( c.x < n.x ) {
         self.cameraPos.current.x += 1;
         self.camera.position.x+=1;
+        self.plane.position.x+=1;
       }
       if (c.z > n.z) {
         self.cameraPos.current.z -= 1;
         self.camera.position.z-=1;
+        self.plane.position.z-=1;
       }
       if ( Math.abs(self.cameraPos.current.x - self.cameraPos.next.x) < 0.5) {
         self.cameraPos.current.x = self.cameraPos.next.x;
