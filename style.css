@@ -20,8 +20,10 @@ body{
 #panel{
 	/*display: block;*/
 	display: none;
+	position:fixed;
 	width: 10%;
-	margin: 3em auto auto 1em;
+	top: 2em;
+	left: 2em;
 }
 .page{
   position: absolute;
@@ -47,12 +49,12 @@ body{
   color: white;
   background-color: #fe7d42;
   border: none;
-  border-radius:1vm; 
+  border-radius:1vw; 
   box-shadow: 0 9px #fdc245;
   
 }
 .page button:focus{
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
+  background-color: #dd6231;
+  box-shadow: 0 5px #dba037;
   transform: translateY(4px);
 }
