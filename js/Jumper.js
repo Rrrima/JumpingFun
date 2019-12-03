@@ -38,13 +38,20 @@ export default class Jumper {
 	createBody () {
 	    const { color, width } = this;
 	    // console.log("inside construction",color,width);
-	    const material = new THREE.MeshLambertMaterial( { color: color } );
-	    material.setValues({color});
-
+	    //const material = new THREE.MeshLambertMaterial( { color: color } );
+	    //material.setValues({color});
+	    const material= new THREE.MeshLambertMaterial( { color: 0xf25f5c } )
 	    // head
-	    const headSize = this.headSize = width * .03;
-	    const headTranslateY = this.headTranslateY = headSize * 4.5;
-	    const headGeometry = new THREE.SphereGeometry(headSize, 16, 16);
+	    const headSize = this.headSize = width * .04;
+	    const headTranslateY = this.headTranslateY = headSize * 2.2;
+	    const headTopGeometry = new THREE.SphereGeometry(headSize, 16, 16);
+	    headTopGeometry.translate(0, headSize*0.25, 0);
+	    const headBottomGeometry = new THREE.CylinderBufferGeometry(headSize * .87, headSize * 1.73, headSize * 1.5, 16);
+	    headBottomGeometry.translate(0, 0, 0);
+	    
+	    const headGeometry = new THREE.Geometry();
+	    headGeometry.merge(headTopGeometry);
+	    headGeometry.merge(new THREE.Geometry().fromBufferGeometry(headBottomGeometry));
 	    const headSegment = this.headSegment = new THREE.Mesh(headGeometry, material);
 	    headSegment.castShadow = true;
 	    headSegment.translateY(headTranslateY);
@@ -53,21 +60,21 @@ export default class Jumper {
 	    this.width = headSize * 1.2 * 2;
 	    this.height = headSize * 5;
 	    this.bodySize = headSize * 4;
-	    const bodyBottomGeometry = new THREE.CylinderBufferGeometry(headSize * .9, this.width / 2, headSize * 2.5, 16);
-	    bodyBottomGeometry.translate(0, headSize * 1.25, 0);
-	    const bodyCenterGeometry = new THREE.CylinderBufferGeometry(headSize, headSize * .9, headSize, 16);
-	    bodyCenterGeometry.translate(0, headSize * 3, 0);
-	    const bodyTopGeometry = new THREE.SphereGeometry(headSize, 16, 16);
-	    bodyTopGeometry.translate(0, headSize * 3.5, 0);
+	    const bodyBottomGeometry = new THREE.CylinderBufferGeometry(headSize * 0.71, headSize * .56, headSize * .3, 16);
+	    bodyBottomGeometry.translate(0, headSize * .15, 0);
+	    const bodyCenterGeometry = new THREE.SphereGeometry(headSize, 16, 16);
+	    bodyCenterGeometry.translate(0, headSize * .86, 0);
+	    const bodyTopGeometry = new THREE.CylinderBufferGeometry(headSize * .43, headSize * .87, headSize * 1.5, 16);
+	    bodyTopGeometry.translate(0, headSize * 2.10, 0);
 
 	    const bodyGeometry = new THREE.Geometry();
-	    bodyGeometry.merge(bodyTopGeometry);
-	    bodyGeometry.merge(new THREE.Geometry().fromBufferGeometry(bodyCenterGeometry));
+	    bodyGeometry.merge(bodyCenterGeometry);
+	    bodyGeometry.merge(new THREE.Geometry().fromBufferGeometry(bodyTopGeometry));
 	    bodyGeometry.merge(new THREE.Geometry().fromBufferGeometry(bodyBottomGeometry));
-
+	    var materialBody = new THREE.MeshLambertMaterial( { color: 0xd1b8be } );
 	    // scale control
 	    const translateY = this.bodyTranslateY = headSize * 1.5;
-	    const bodyScaleSegment = this.bodyScaleSegment = new THREE.Mesh(bodyGeometry, material);
+	    const bodyScaleSegment = this.bodyScaleSegment = new THREE.Mesh(bodyGeometry, materialBody);
 	    bodyScaleSegment.castShadow = true;
 	    bodyScaleSegment.translateY(-translateY);
 
