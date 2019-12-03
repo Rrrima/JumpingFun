@@ -31,7 +31,7 @@ export default function Game () {
   scene.add(light);
    //地面
   const planeGeometry = new THREE.PlaneBufferGeometry(10e2, 10e2, 1, 1);
-  const planeMeterial = new THREE.MeshLambertMaterial({ color: 0x306b34 });
+  const planeMeterial = new THREE.MeshLambertMaterial({ color:0x2a8c63 });
   const plane = new THREE.Mesh(planeGeometry, planeMeterial);
   this.plane = plane;
   
@@ -126,11 +126,11 @@ Object.assign(Game.prototype, {
     // var color = cubeType === 'cube' ? this.config.cubeColor : this.config.cylinderColor;
     var materials = cubeType === 'cube' ?[ 
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // right
-     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // left
+     new THREE.MeshLambertMaterial( { color: 0x38250d } ), // left
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top.jpg") } ), // top
      new THREE.MeshLambertMaterial( { color:'black'} ), // bottom 
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // front 
-     new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk.jpg") } ), // back
+     new THREE.MeshLambertMaterial( { color: 0x38250d } ), // back
     ]:[
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_round.jpg") } ), // side
      new THREE.MeshLambertMaterial( { map:new THREE.TextureLoader().load("imgs/jump_trunk_top_round.jpg") } ), // top
@@ -360,8 +360,11 @@ Object.assign(Game.prototype, {
       } else if (type === -2){
         // 落到大地上动画
         (function continuefalling () {
+          
           if (self.jumper.position.y >= 0){
             self.jumper.position.y -= 0.8;
+            var scaleY=self.jumper.scale.y;
+            self.jumper.scale.y -=scaleY>1? .025:0;
             self._render();
             requestAnimationFrame(continuefalling);
           }
@@ -384,7 +387,7 @@ Object.assign(Game.prototype, {
   },
 
   _initScore: function (){
-    document.getElementById("panel").style.display="block";
+    document.getElementById("current_score").innerHTML="0";
   },
 
   _updateScore: function (){
@@ -450,7 +453,9 @@ Object.assign(Game.prototype, {
        var self  = this;
        (function continuefalling () {
          if (self.jumper.position.y >= 0){
-           self.jumper.position.y -= 0.8;
+           self.jumper.position.y -= speed;
+           var scaleY=self.jumper.scale.y;
+            self.jumper.scale.y -=scaleY>1? .025:0;
            self._render();
            console.log("falling!");
            requestAnimationFrame(continuefalling);
