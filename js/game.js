@@ -31,7 +31,7 @@ export default function Game () {
   scene.add(light);
    //地面
   const planeGeometry = new THREE.PlaneBufferGeometry(10e2, 10e2, 1, 1);
-  const planeMeterial = new THREE.MeshLambertMaterial({ color:0x2a8c63 });
+  const planeMeterial = new THREE.MeshLambertMaterial({ color:0x596b44 });
   const plane = new THREE.Mesh(planeGeometry, planeMeterial);
   this.plane = plane;
   
