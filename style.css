@@ -3,6 +3,7 @@ body{
   margin: 0;
   font-family: 'Tomorrow', 'Roboto', sans-serif;
   font-size: 16px/22px;
+  min-width: 300px;
 }
 
 #score{
@@ -18,12 +19,12 @@ body{
   color: #fff;
 }
 #panel{
-	/*display: block;*/
 	display: none;
 	position:fixed;
 	width: 10%;
 	top: 2em;
 	left: 2em;
+  color: white;
 }
 .page{
   position: absolute;
@@ -32,29 +33,37 @@ body{
   right:0;
   top:0;
   bottom: 0;
-  background-color: silver;
   text-align: center;
-
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+.startPage{
+  background: url("imgs/start.jpg"), #5f6e37;
+  background-position: left;
+  background-size: cover;
+}
+.restartPage{
+  display: none;
+  background-color: rgba(0,0,0,.48);
+}
 .page button{
   width: 20vw;
   height: 100px;
   font-size: 1.2em;
   font-family: 'Tomorrow', 'Roboto', sans-serif;
   color: white;
-  background-color: #fe7d42;
+  background-color: #adbd36;
   border: none;
   border-radius:1vw; 
-  box-shadow: 0 9px #fdc245;
+  box-shadow: 0 9px #7a8c25;
   
 }
 .page button:focus{
-  background-color: #dd6231;
-  box-shadow: 0 5px #dba037;
+  background-color: #94a229;
+  box-shadow: 0 5px #495b34;
   transform: translateY(4px);
 }
